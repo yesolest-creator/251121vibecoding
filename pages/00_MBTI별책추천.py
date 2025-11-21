@@ -422,7 +422,7 @@ with col_left:
 
     st.markdown("---")
 
-    # ----------------- 추천 도서 출력 -----------------
+      # ----------------- 추천 도서 출력 -----------------
     st.markdown(
         f"""<div class="section-title">📚 {mbti} 유형에게 어울리는 고전 책</div>""",
         unsafe_allow_html=True,
@@ -431,29 +431,35 @@ with col_left:
     books = RECOMMENDATIONS.get(mbti, [])
 
     for book in books:
-        with st.container():
-            st.markdown('<div class="book-card">', unsafe_allow_html=True)
-            st.markdown(
-                f"""
-                <div class="book-title">📖 {book['title']}</div>
-                <div class="book-meta">
-                    ✍️ {book['author']} · <span style="color:#6366f1;">{book['vibe']}</span>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        # 설명 문장 선택
+        if detail_level == "조금 자세히":
+            desc = book["why"]
+        else:
+            desc = "👉 이 MBTI의 성향과 잘 맞는 고전으로, 사고의 깊이와 시야를 넓혀 줄 수 있는 책입니다."
 
-            if detail_level == "조금 자세히":
-                st.write(book["why"])
-            else:
-                st.write("👉 이 MBTI의 성향과 잘 맞는 고전으로, 사고의 깊이와 시야를 넓혀 줄 수 있는 책입니다.")
+        # 진로 태그 HTML
+        tags_html = "".join(
+            [f'<span class="tag">🎯 {c}</span>' for c in book["career"]]
+        )
 
-            # 진로 태그
-            tags_html = "".join(
-                [f'<span class="tag">🎯 {c}</span>' for c in book["career"]]
-            )
-            st.markdown(tags_html, unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+        # 카드 전체를 하나의 HTML 블록으로 생성
+        card_html = f"""
+        <div class="book-card">
+            <div class="book-title">📖 {book['title']}</div>
+            <div class="book-meta">
+                ✍️ {book['author']} · <span style="color:#6366f1;">{book['vibe']}</span>
+            </div>
+            <div style="font-size:0.9rem; margin-bottom:0.6rem;">
+                {desc}
+            </div>
+            <div>
+                {tags_html}
+            </div>
+        </div>
+        """
+
+        st.markdown(card_html, unsafe_allow_html=True)
+
 
     # ----------------- 진로 코멘트 -----------------
     st.markdown(
